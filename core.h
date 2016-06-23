@@ -1,4 +1,3 @@
-//Version 20160608
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
@@ -315,7 +314,7 @@ class webcam
 		#define  Trig_Create Trig_Pos_Change //Lazy to Write
 		int Trig_Create(int OTrig_X, int OTrig_Y, int OTrig_regX, int OTrig_regY,int prior1)
 		{
-			if (prior1>Trig_num - 1 && prior1==0)
+			if (prior1>Trig_num-1)
 			{
 				return -1;
 			}
@@ -326,7 +325,7 @@ class webcam
 			this->Effective[prior1] = 1;
 			return 0;
 		}
-		#define  Trig_Del Trig_hide
+
 		//Delete Trig Region
 		int Trig_Del(int prior1)
 		{
@@ -338,13 +337,12 @@ class webcam
 			this->Effective[prior1] = 1;
 			return 0;
 		}
-		/*
 		int Trig_hide(int prior1)
 		{
 			
 			this->Effective[prior1]= -1;
 			return 0;
-		}*/
+		}
 		/**Backgroung_Trigger**/
 		int Trig_func()
 		{

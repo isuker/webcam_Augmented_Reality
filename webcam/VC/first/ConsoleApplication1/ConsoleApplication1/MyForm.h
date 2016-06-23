@@ -1,3 +1,4 @@
+
 #pragma once
 #include <stdio.h>
 #include <opencv2/core/core.hpp>
@@ -219,21 +220,20 @@ private: System::Void button1_Click(System::Object^  sender, System::EventArgs^ 
 		//
 		
 		//
-		Mat frame;
+	/*	Mat frame;
 		Mat frame1;
-		Mat frame2;
-		//Display
-		DScreen *disp = new DScreen;
+		Mat frame2;*/
+		
 
 		//Load TASK,Put on picture into frame  
 		TASK *T1 = new TASK;
-		T1->TASK_Init();
 
-#define Picture_len 2
+#define Picture_len 3
 		Picture *PIC[Picture_len] =
 		{
 			new Picture("picture1", 1, "C:\\project\\Clean-window\\image\\2.png", 0, 0),
-			new Picture("picture2", 2, "C:\\project\\Clean-window\\image\\unbutu.png", 200,200)
+			new Picture("picture2", 3, "C:\\project\\Clean-window\\image\\unbutu.png", 200,200),
+			new Picture("picture3", 2, "C:\\project\\Clean-window\\image\\m.jpg", 500, 200)
 		};
 		
 		//Load and inseert TASK
@@ -241,24 +241,28 @@ private: System::Void button1_Click(System::Object^  sender, System::EventArgs^ 
 		{
 			if (PIC[i]->Picture_Load() != 0)
 			{
-				MessageBox::Show("Picture" + i + "is error");
+				MessageBox::Show("Picture" + i+1 + "is error");
 				exit(1);
 			}
 			T1->TASK_Create(PIC[i]);
 		}
 		//Init Camera
 		VideoCapture capture(0);
-		capture.read(frame);
+		//capture.read(frame);
 
 		webcam *W1 = new webcam(capture, 1280, 720, 30);
-		W1->webcam_Trig_init();
+	
+		//Display
+		DScreen *disp = new DScreen;
+
 		for (int i = 0; i < Picture_len; i++)
 		{
 		//Because trigger begin from element 1
 			W1->Trig_Create(PIC[i]->Pos_X(), PIC[i]->Pos_Y(), 200, 150, i + 1);
 		}
-
+	
 		//formal 
+		int flag = 0;
 		while (1)
 		{
 			//Display Webcam Image
@@ -269,23 +273,23 @@ private: System::Void button1_Click(System::Object^  sender, System::EventArgs^ 
 				//if (T1->table_id[i] == 1)disp->Image_puts(frames, T1->table_1[i]);
 				disp->Image_puts(frames, T1->TASK_effective(i));
 			}
-			//W1->Trig_Pos_Change(p1->Pos_X(), p1->Pos_Y(), 256, 256, 0);
-			//disp->Image_Mov(PIC[0], 5, 0);
+			//1->Trig_Pos_Change(p1->Pos_X(), p1->Pos_Y(), 256, 256, 0);
+			
 
-			if (PIC[0]->Pos_X() > 200)
+			if (PIC[1]->Pos_X() > 400 && flag == 0)
 			{
-				T1->TASK_Delete(PIC[0]);
+				T1->TASK_Delete(PIC[1]);
+				T1->TASK_Delete(PIC[2]);
+				MessageBox::Show("first blood");
+				flag = 1;
 			}
 			//Trigger
 			if (W1->Trig_func() == 1)
 			{
+				disp->Image_Rotation(T1->TASK_effective(3), 20);
+				disp->Image_Mov(PIC[1], 5, 0);
+			}
 			
-				MessageBox::Show("YES");
-			}
-			else if (W1->Trig_func() == 2)
-			{
-				MessageBox::Show("YES1");
-			}
 
 			waitKey(30);
 			namedWindow("AW", WINDOW_NORMAL);
