@@ -1,6 +1,6 @@
 # webcam_Augmented_Reality
 
-##Introduce : Provide Visual image put into webcam image  
+##Introduce : Provide Virual image put into webcam image  
 
 ##Environment : 
 
