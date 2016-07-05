@@ -1,4 +1,4 @@
-//Version 20160705
+//Version 20160706,Version 2.0 , Compatible Version 1.0
 #ifndef _core_H
 #define  _core_H
 #include <opencv2/core/core.hpp>
@@ -137,26 +137,35 @@ class VTASK
 {
 private:
 	//Picture LinkList
-	vector <Picture> VTASK_Table;
+	vector <Picture*> VTASK_Table;
 	//now pointer
 	int now_location;
 public:
 	VTASK(){ now_location = 0; };
 	~VTASK(){};
-	void VTASK_Create(Picture *P1)
+	int VTASK_Create(Picture *P1)
 	{
-		VTASK_Table.push_back(*P1);
+		if (VTASK_Table.size() != P1->Get_ID())
+		{
+			cout << "ID must be constant";
+			return -1;
+		}
+		VTASK_Table.insert(VTASK_Table.begin()+P1->Get_ID(), P1);
+		return 0;
 	}
-	void VTASK_Delete(int Picture_id)
+	void VTASK_Delete(Picture* picture_position)
 	{
-		VTASK_Table.erase(VTASK_Table.begin() + Picture_id);
+		//search 
+		vector <Picture*>::iterator index = find(VTASK_Table.begin(), VTASK_Table.end(), picture_position);
+		if (VTASK_Table.begin() != VTASK_Table.end())VTASK_Table.erase(index);
+		else VTASK_Table.clear();
 	}
 	int VTASK_Size()
 	{
 		return VTASK_Table.size();
 	}
 	
-	vector<Picture> &VTASK_Get_Vector()
+	vector<Picture*> &VTASK_Get_Vector()
 	{
 		return VTASK_Table;
 	}
@@ -224,24 +233,25 @@ class DScreen : public Mat
 				cerr << "The Picture is not exist";
 				return 1;
 			}
-			vector <Picture>V1 = obj->VTASK_Get_Vector();
-			vector <Picture>::iterator it = V1.begin();
-			for (int i = 0; it != V1.end(); it++)
+			vector <Picture*>V1 = obj->VTASK_Get_Vector();
+			vector <Picture*>::iterator it = V1.begin();
+			for (int i = 0; it != V1.end(); it++,i++)
 			{	
-				Mat logo = it->image;
+				Mat logo = V1.at(i)->image;
 				if (!logo.data)return -1;
 				//Mat Temp
 				Mat ImageROT;
 				//Mask
 				Mat mask = logo;
 				//Setting area
-				ImageROT = background->image(Rect(it->position_x, it->position_y, logo.cols, logo.rows));
+				ImageROT = background->image(Rect(V1.at(i)->position_x, V1.at(i)->position_y, logo.cols, logo.rows));
 				//Copy retrun Picture
 				logo.copyTo(ImageROT, mask);
 			}
 			return 0;
 		
 		}
+		
 		/****************************************************************/
 		/*Name:image_puts                                               */
 		/*Input:Mat Pic_In, string Max_in, int position_x, int position */
@@ -310,7 +320,105 @@ class DScreen : public Mat
 			return 0;
 		}
 };
+class Vwebcam
+{
+	//allow Trigger perior from zero
+	private:
+		//for Trigger
+		vector <int> Trig_X, Trig_Y, Trig_regX, Trig_regY;
+		Mat Parent_frame;
+	public:
+		//for Camera
+		Picture background;
 
+		Vwebcam(VideoCapture Ocapture, int WIDTH, int HEIGHT, int FPS)
+		{
+			Vwebcam_init(Ocapture, WIDTH, HEIGHT,FPS);
+		};
+		~Vwebcam(){};
+		//camera
+		VideoCapture capture;
+		void Vwebcam_init(VideoCapture Ocapture, int WIDTH, int HEIGHT, int FPS)
+		{
+			this->Trig_X.clear();
+			this->Trig_Y.clear();
+			this->Trig_regX.clear();
+			this->Trig_regY.clear();
+			if (WIDTH < 200 || HEIGHT < 200 || FPS < 10)
+			{
+				WIDTH = 1280;
+				HEIGHT = 720;
+				FPS = 30;
+			}
+			capture = Ocapture;
+			//Setting WebCam Format
+			capture.set(CV_CAP_PROP_FRAME_WIDTH, WIDTH);
+			capture.set(CV_CAP_PROP_FRAME_HEIGHT, HEIGHT);
+			capture.set(CV_CAP_PROP_FPS, FPS);
+		}
+		Picture *Catch_image()
+		{
+			Mat *frame=new Mat;
+			capture.read(*frame);
+			background.Mat_Convert_To_Picture(*frame,20);
+			delete frame;
+			return &background;
+		}
+		//Trigger
+		int Trig_Create(int OTrig_X, int OTrig_Y, int OTrig_regX, int OTrig_regY, int prior1)
+		{
+			if (Trig_X.size() != prior1)
+			{
+				cout << "Prior must be constant";
+				return -1;
+			}
+			this->Trig_X.insert(Trig_X.begin(), OTrig_X);
+			this->Trig_Y.insert(Trig_Y.begin(), OTrig_Y);
+			this->Trig_regX.insert(Trig_regX.begin(), OTrig_regX);
+			this->Trig_regY.insert(Trig_regY.begin(), OTrig_regY);
+			return 0;
+		}
+		int Trig_Del(int prior1)
+		{
+			if (this->Trig_X.begin() == this->Trig_X.end())
+			{
+				this->Trig_X.clear();
+				this->Trig_Y.clear();
+				this->Trig_regX.clear();
+				this->Trig_regY.clear();
+			}
+			vector <int>::iterator Trig_index = find(this->Trig_X.begin(), this->Trig_X.end(), Trig_X.at(prior1));
+			this->Trig_X.erase(Trig_index);
+			this->Trig_Y.erase(Trig_index);
+			this->Trig_regX.erase(Trig_index);
+			this->Trig_regY.erase(Trig_index);
+			return 0;
+		}
+		int Trig_func()
+		{
+			//update webcam picture
+			Mat update_frame;
+			Mat imageROI0;
+			Mat imageROI1;
+			capture.read(update_frame);
+			vector <int>::iterator VTrig_X = Trig_X.begin();
+			for (int i = 0; VTrig_X != Trig_X.end(); i++, VTrig_X++)
+			{
+				//Parent frame
+				imageROI0 = Parent_frame(Rect(Trig_X.at(i), Trig_Y.at(i), Trig_regX.at(i), Trig_regY.at(i)));
+				//Sub frame
+				imageROI1 = update_frame(Rect(Trig_X.at(i), Trig_Y.at(i), Trig_regX.at(i), Trig_regY.at(i)));
+				//threshold
+				threshold(imageROI1, imageROI0, threshold_num, 1, THRESH_BINARY_INV);
+				//NON black Percentage
+				if ((float)(sum(imageROI0)[0]) / ((float)Trig_regX.at(i) * (float)Trig_regY.at(i)) > Trig_Percent)
+				{
+					return i;
+				}
+			}
+			return -1;
+		}
+};
 //webcam class
 class webcam
 {

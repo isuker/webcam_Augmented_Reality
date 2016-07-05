@@ -7,8 +7,6 @@
 #include "MyForm1.h"
 #include "../user/core.h"
 
-
-
 namespace ConsoleApplication1 {
 
 	using namespace System;
@@ -244,9 +242,9 @@ private: System::Void button1_Click(System::Object^  sender, System::EventArgs^ 
 #define Picture_len 3
 		Picture *PIC[Picture_len] =
 		{
-			new Picture("picture1", 1, "C:\\project\\Clean-window\\image\\2.png", 0, 0),
-			new Picture("picture2", 3, "C:\\project\\Clean-window\\image\\unbutu.png", 200,200),
-			new Picture("picture3", 2, "C:\\project\\Clean-window\\image\\m.jpg", 500, 200)
+			new Picture("name1", 0, "D:\\project\\AR\\webcam_Augmented_Reality\\image\\2.png", 0, 0),
+			new Picture("name2", 1, "D:\\project\\AR\\webcam_Augmented_Reality\\image\\base1.png", 0, 0),
+			new Picture("name3", 2, "D:\\project\\AR\\webcam_Augmented_Reality\\image\\m.jpg", 0, 0)
 		};
 		
 		//Load and inseert TASK
@@ -283,12 +281,8 @@ private: System::Void button1_Click(System::Object^  sender, System::EventArgs^ 
 			//Display ALL Image
 			for (int i = 0; i < MAX_TASK - 1; i++)
 			{
-				//if (T1->table_id[i] == 1)disp->Image_puts(frames, T1->table_1[i]);
 				disp->Image_puts(frames, T1->TASK_effective(i));
 			}
-			//1->Trig_Pos_Change(p1->Pos_X(), p1->Pos_Y(), 256, 256, 0);
-			
-
 			if (PIC[1]->Pos_X() > 400 && flag == 0)
 			{
 				T1->TASK_Delete(PIC[1]);
@@ -302,8 +296,6 @@ private: System::Void button1_Click(System::Object^  sender, System::EventArgs^ 
 				disp->Image_Rotation(T1->TASK_effective(3), 20);
 				disp->Image_Mov(PIC[1], 5, 0);
 			}
-			
-
 			waitKey(30);
 			namedWindow("AW", WINDOW_NORMAL);
 			imshow("AW", frames);
@@ -340,19 +332,36 @@ private: System::Void button2_Click(System::Object^  sender, System::EventArgs^ 
 	Pic[1]->Picture_Load();
 
 	VTASK *VT = new VTASK;
-	VT->VTASK_Create(Pic[0]);
-	VT->VTASK_Create(Pic[1]);
+	if (VT->VTASK_Create(Pic[0])){ MessageBox::Show("ERROR"); };
+	if (VT->VTASK_Create(Pic[1])){ MessageBox::Show("ERROR"); };
+
 	DScreen *DSP1 = new DScreen;
 	VideoCapture capture(0);
-	webcam *web = new webcam(capture, -1, -1,30);
-	Picture *backgraounds = new Picture;
+	Vwebcam *web = new Vwebcam(capture, -1, -1 , 30);
+	
 	while (1)
 	{
-		backgraounds->Mat_Convert_To_Picture(web->Catch_image(), 2);
-		DSP1->Image_puts(backgraounds, VT);
+		//Camera image
+		web->Catch_image();
+		//Put virtual image
+		DSP1->Image_puts(&web->background, VT);
 		namedWindow("AW");
-		imshow("AW",backgraounds->Get_image());
-		cv::waitKey(30);
+		imshow("AW", web->background.Get_image());
+		//
+		DSP1->Image_Rotation(Pic[1], 20);
+		DSP1->Image_Mov(Pic[0], 5, 0);
+		if (Pic[0]->Pos_X() > 100)
+		{
+			VT->VTASK_Delete(Pic[0]);
+			VT->VTASK_Delete(Pic[1]);
+			MessageBox::Show("first blood");
+		}
+		cv::waitKey(10);
+		if (cvWaitKey(10) == 27)
+		{
+			destroyWindow("AW");
+			break;
+		}
 	}
 }
 };
