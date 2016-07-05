@@ -40,6 +40,7 @@ namespace ConsoleApplication1 {
 	private: System::Windows::Forms::ToolStripMenuItem^  查看紀錄ToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^  關於ToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^  關於ToolStripMenuItem1;
+	private: System::Windows::Forms::Button^  button2;
 	public:
 		//Time
 		int time = 0;
@@ -87,13 +88,14 @@ namespace ConsoleApplication1 {
 			this->查看紀錄ToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->關於ToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->關於ToolStripMenuItem1 = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->button2 = (gcnew System::Windows::Forms::Button());
 			this->menuStrip1->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// button1
 			// 
 			this->button1->Anchor = System::Windows::Forms::AnchorStyles::Top;
-			this->button1->Font = (gcnew System::Drawing::Font(L"PMingLiU", 20.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->button1->Font = (gcnew System::Drawing::Font(L"新細明體", 20.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(136)));
 			this->button1->Location = System::Drawing::Point(346, 407);
 			this->button1->Name = L"button1";
@@ -111,7 +113,7 @@ namespace ConsoleApplication1 {
 			// 
 			this->label1->Anchor = System::Windows::Forms::AnchorStyles::Top;
 			this->label1->AutoSize = true;
-			this->label1->Font = (gcnew System::Drawing::Font(L"PMingLiU", 36, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->label1->Font = (gcnew System::Drawing::Font(L"新細明體", 36, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(136)));
 			this->label1->Location = System::Drawing::Point(375, 186);
 			this->label1->Name = L"label1";
@@ -146,13 +148,13 @@ namespace ConsoleApplication1 {
 			// 
 			this->檔案ToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->關閉ToolStripMenuItem });
 			this->檔案ToolStripMenuItem->Name = L"檔案ToolStripMenuItem";
-			this->檔案ToolStripMenuItem->Size = System::Drawing::Size(44, 20);
+			this->檔案ToolStripMenuItem->Size = System::Drawing::Size(43, 20);
 			this->檔案ToolStripMenuItem->Text = L"檔案";
 			// 
 			// 關閉ToolStripMenuItem
 			// 
 			this->關閉ToolStripMenuItem->Name = L"關閉ToolStripMenuItem";
-			this->關閉ToolStripMenuItem->Size = System::Drawing::Size(100, 22);
+			this->關閉ToolStripMenuItem->Size = System::Drawing::Size(98, 22);
 			this->關閉ToolStripMenuItem->Text = L"關閉";
 			this->關閉ToolStripMenuItem->Click += gcnew System::EventHandler(this, &MyForm::關閉ToolStripMenuItem_Click);
 			// 
@@ -160,34 +162,45 @@ namespace ConsoleApplication1 {
 			// 
 			this->紀錄ToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->查看紀錄ToolStripMenuItem });
 			this->紀錄ToolStripMenuItem->Name = L"紀錄ToolStripMenuItem";
-			this->紀錄ToolStripMenuItem->Size = System::Drawing::Size(44, 20);
+			this->紀錄ToolStripMenuItem->Size = System::Drawing::Size(43, 20);
 			this->紀錄ToolStripMenuItem->Text = L"紀錄";
 			// 
 			// 查看紀錄ToolStripMenuItem
 			// 
 			this->查看紀錄ToolStripMenuItem->Name = L"查看紀錄ToolStripMenuItem";
-			this->查看紀錄ToolStripMenuItem->Size = System::Drawing::Size(124, 22);
+			this->查看紀錄ToolStripMenuItem->Size = System::Drawing::Size(122, 22);
 			this->查看紀錄ToolStripMenuItem->Text = L"查看紀錄";
 			// 
 			// 關於ToolStripMenuItem
 			// 
 			this->關於ToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) { this->關於ToolStripMenuItem1 });
 			this->關於ToolStripMenuItem->Name = L"關於ToolStripMenuItem";
-			this->關於ToolStripMenuItem->Size = System::Drawing::Size(44, 20);
+			this->關於ToolStripMenuItem->Size = System::Drawing::Size(43, 20);
 			this->關於ToolStripMenuItem->Text = L"關於";
 			// 
 			// 關於ToolStripMenuItem1
 			// 
 			this->關於ToolStripMenuItem1->Name = L"關於ToolStripMenuItem1";
-			this->關於ToolStripMenuItem1->Size = System::Drawing::Size(100, 22);
+			this->關於ToolStripMenuItem1->Size = System::Drawing::Size(98, 22);
 			this->關於ToolStripMenuItem1->Text = L"關於";
 			this->關於ToolStripMenuItem1->Click += gcnew System::EventHandler(this, &MyForm::關於ToolStripMenuItem1_Click);
+			// 
+			// button2
+			// 
+			this->button2->Location = System::Drawing::Point(708, 136);
+			this->button2->Name = L"button2";
+			this->button2->Size = System::Drawing::Size(151, 75);
+			this->button2->TabIndex = 4;
+			this->button2->Text = L"button2";
+			this->button2->UseVisualStyleBackColor = true;
+			this->button2->Click += gcnew System::EventHandler(this, &MyForm::button2_Click);
 			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 12);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(960, 576);
+			this->Controls->Add(this->button2);
 			this->Controls->Add(this->label2);
 			this->Controls->Add(this->label1);
 			this->Controls->Add(this->button1);
@@ -315,6 +328,32 @@ private: System::Void 關於ToolStripMenuItem1_Click(System::Object^  sender, Syst
 	MyForm1^ MyForms = gcnew MyForm1();
 	MyForms->Show();
 	
+}
+private: System::Void button2_Click(System::Object^  sender, System::EventArgs^  e) {
+	Picture *Pic[]=
+	{
+		new Picture("name1", 0, "D:\\project\\AR\\webcam_Augmented_Reality\\image\\2.png", 0, 0),
+		new Picture("name2", 1, "D:\\project\\AR\\webcam_Augmented_Reality\\image\\base1.png", 0, 0),
+		new Picture("name3", 2, "D:\\project\\AR\\webcam_Augmented_Reality\\image\\base1.png", 0, 0)
+	};
+	Pic[0]->Picture_Load();
+	Pic[1]->Picture_Load();
+
+	VTASK *VT = new VTASK;
+	VT->VTASK_Create(Pic[0]);
+	VT->VTASK_Create(Pic[1]);
+	DScreen *DSP1 = new DScreen;
+	VideoCapture capture(0);
+	webcam *web = new webcam(capture, -1, -1,30);
+	Picture *backgraounds = new Picture;
+	while (1)
+	{
+		backgraounds->Mat_Convert_To_Picture(web->Catch_image(), 2);
+		DSP1->Image_puts(backgraounds, VT);
+		namedWindow("AW");
+		imshow("AW",backgraounds->Get_image());
+		cv::waitKey(30);
+	}
 }
 };
 }

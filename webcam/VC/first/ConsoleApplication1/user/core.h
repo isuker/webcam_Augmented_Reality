@@ -1,10 +1,12 @@
-//Version 20160608
+//Version 20160705
+#ifndef _core_H
+#define  _core_H
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <string>
 #include <iostream>
-
+#include <vector>
 using namespace std;
 using namespace cv;
 using namespace System;
@@ -113,6 +115,13 @@ class Picture :public Mat
 		{
 			return image;
 		}
+		void Mat_Convert_To_Picture(Mat frame,int id)
+		{
+			image = frame;
+			this->ID=id;
+			this->position_x=0;
+			this->position_y=0;
+		}
 		//Get ID
 		int Get_ID()
 		{
@@ -123,6 +132,36 @@ class Picture :public Mat
 		friend class DScreen;
 		friend class webcam;
 };
+
+class VTASK
+{
+private:
+	//Picture LinkList
+	vector <Picture> VTASK_Table;
+	//now pointer
+	int now_location;
+public:
+	VTASK(){ now_location = 0; };
+	~VTASK(){};
+	void VTASK_Create(Picture *P1)
+	{
+		VTASK_Table.push_back(*P1);
+	}
+	void VTASK_Delete(int Picture_id)
+	{
+		VTASK_Table.erase(VTASK_Table.begin() + Picture_id);
+	}
+	int VTASK_Size()
+	{
+		return VTASK_Table.size();
+	}
+	
+	vector<Picture> &VTASK_Get_Vector()
+	{
+		return VTASK_Table;
+	}
+};
+
 class TASK
 {
 	private:
@@ -178,6 +217,31 @@ class DScreen : public Mat
 	public:
 		DScreen(){};
 		~DScreen(){};
+		int Image_puts(Picture* background,VTASK *obj)
+		{
+			if (background == (Picture*)NULL || obj == (VTASK*)NULL)
+			{
+				cerr << "The Picture is not exist";
+				return 1;
+			}
+			vector <Picture>V1 = obj->VTASK_Get_Vector();
+			vector <Picture>::iterator it = V1.begin();
+			for (int i = 0; it != V1.end(); it++)
+			{	
+				Mat logo = it->image;
+				if (!logo.data)return -1;
+				//Mat Temp
+				Mat ImageROT;
+				//Mask
+				Mat mask = logo;
+				//Setting area
+				ImageROT = background->image(Rect(it->position_x, it->position_y, logo.cols, logo.rows));
+				//Copy retrun Picture
+				logo.copyTo(ImageROT, mask);
+			}
+			return 0;
+		
+		}
 		/****************************************************************/
 		/*Name:image_puts                                               */
 		/*Input:Mat Pic_In, string Max_in, int position_x, int position */
@@ -245,7 +309,6 @@ class DScreen : public Mat
 			P1->position_y += y;
 			return 0;
 		}
-		
 };
 
 //webcam class
@@ -338,13 +401,6 @@ class webcam
 			this->Effective[prior1] = 1;
 			return 0;
 		}
-		/*
-		int Trig_hide(int prior1)
-		{
-			
-			this->Effective[prior1]= -1;
-			return 0;
-		}*/
 		/**Backgroung_Trigger**/
 		int Trig_func()
 		{
@@ -416,3 +472,4 @@ class webcam
 		}
 		
 };
+#endif
