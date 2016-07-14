@@ -13,10 +13,12 @@ using namespace System;
 using namespace System::IO;
 
 
+/*for Version 1*/
 //Puts picture Max count
 #define MAX_TASK 100
 //Trig object Max count-1
-#define Trig_num 100 
+#define Trig_num 100
+/*for version 1 and 2*/
 //Trig_Percent   
 #define Trig_Percent 0.2
 //threshold num
@@ -43,7 +45,14 @@ class Picture :public Mat
 		//Picture Constructor 
 		Picture(){};
 		~Picture(){};
-
+		//Create Picture information,and provide position,but not named name
+		Picture(int ID1, string Path1, int position_x1, int position_y1)
+		{
+			this->ID = ID1;
+			this->Path = Path1;
+			this->position_x = position_x1;
+			this->position_y = position_y1;
+		}
 		//Create Picture information,and provide position
 		Picture(string Name1, int ID1, string Path1, int position_x1, int position_y1)
 		{
@@ -62,7 +71,6 @@ class Picture :public Mat
 				//ID too Large
 				return -2;
 			}
-
 			//File check
 			FILE *f1;
 			f1 = fopen((this->Path).c_str(), "r");
@@ -92,7 +100,6 @@ class Picture :public Mat
 			
 			return 0;
 		}
-
 		//Add Position information
 		int Add_Position(int position_x1, int position_y1)
 		{
@@ -110,11 +117,12 @@ class Picture :public Mat
 		{
 			return position_y;
 		}
-		//Get image
+		//Convert Picture type to Mat type
 		Mat Get_image()
 		{
 			return image;
 		}
+		//Convert Mat type to Picture type
 		void Mat_Convert_To_Picture(Mat frame,int id)
 		{
 			image = frame;
@@ -315,6 +323,7 @@ class DScreen : public Mat
 				cerr << "The Picture is not exist";
 				return 1;
 			}
+			//Tracker and update Picture's postive
 			P1->position_x += x;
 			P1->position_y += y;
 			return 0;
@@ -355,6 +364,10 @@ class Vwebcam
 			capture.set(CV_CAP_PROP_FRAME_WIDTH, WIDTH);
 			capture.set(CV_CAP_PROP_FRAME_HEIGHT, HEIGHT);
 			capture.set(CV_CAP_PROP_FPS, FPS);
+			//Create Parent frame
+			this->Catch_image();
+			Parent_frame = background.Get_image();
+			
 		}
 		Picture *Catch_image()
 		{
@@ -377,6 +390,14 @@ class Vwebcam
 			this->Trig_regX.insert(Trig_regX.begin(), OTrig_regX);
 			this->Trig_regY.insert(Trig_regY.begin(), OTrig_regY);
 			return 0;
+		}
+		void Trig_change_pos(int prior1,int pos_x,int pos_y)
+		{
+			vector <int>::iterator ITrig_X = find(this->Trig_X.begin(), this->Trig_X.end(), Trig_X.at(prior1));
+			vector <int>::iterator ITrig_Y = find(this->Trig_Y.begin(), this->Trig_Y.end(), Trig_Y.at(prior1));
+			*ITrig_X = pos_x;
+			*ITrig_Y = pos_y;
+			return (void)0;
 		}
 		int Trig_Del(int prior1)
 		{
@@ -482,8 +503,11 @@ class webcam
 			capture.read(frame);
 			return frame;
 		}
-
-		#define  Trig_Create Trig_Pos_Change //Lazy to Write
+		int Trig_Pos_Change(int OTrig_X, int OTrig_Y, int OTrig_regX, int OTrig_regY, int prior1)
+		{
+			Trig_Create(OTrig_X, OTrig_Y, OTrig_regX, OTrig_regY, prior1);
+			return 0;
+		}
 		int Trig_Create(int OTrig_X, int OTrig_Y, int OTrig_regX, int OTrig_regY,int prior1)
 		{
 			if (prior1>Trig_num - 1 && prior1==0)
@@ -523,7 +547,6 @@ class webcam
 					{
 						continue;
 					}
-			
 					//Parent frame
 					imageROI0 = Parent_frame(Rect(Trig_X[i], Trig_Y[i], Trig_regX[i], Trig_regY[i]));
 					//Sub frame

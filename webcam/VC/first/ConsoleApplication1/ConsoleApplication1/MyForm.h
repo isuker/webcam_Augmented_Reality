@@ -228,14 +228,6 @@ private: System::Void button1_Click(System::Object^  sender, System::EventArgs^ 
 		timer1->Interval = 1000;
 		//initial time number
 		time = 0;
-		//
-		
-		//
-	/*	Mat frame;
-		Mat frame1;
-		Mat frame2;*/
-		
-
 		//Load TASK,Put on picture into frame  
 		TASK *T1 = new TASK;
 
@@ -337,8 +329,9 @@ private: System::Void button2_Click(System::Object^  sender, System::EventArgs^ 
 
 	DScreen *DSP1 = new DScreen;
 	VideoCapture capture(0);
-	Vwebcam *web = new Vwebcam(capture, -1, -1 , 30);
-	
+	Vwebcam *web = new Vwebcam(capture, 1280, 720 , 30);
+	web->Trig_Create(Pic[0]->Pos_X(), Pic[0]->Pos_Y(), 200, 150, 0);
+
 	while (1)
 	{
 		//Camera image
@@ -347,10 +340,13 @@ private: System::Void button2_Click(System::Object^  sender, System::EventArgs^ 
 		DSP1->Image_puts(&web->background, VT);
 		namedWindow("AW");
 		imshow("AW", web->background.Get_image());
-		//
-		DSP1->Image_Rotation(Pic[1], 20);
-		DSP1->Image_Mov(Pic[0], 5, 0);
-		if (Pic[0]->Pos_X() > 100)
+		if (web->Trig_func()==0)
+		{
+			DSP1->Image_Rotation(Pic[1], 20);
+			web->Trig_change_pos(0, Pic[0]->Pos_X(), Pic[0]->Pos_Y());
+			DSP1->Image_Mov(Pic[0], 10, 0);
+		}
+		if (Pic[0]->Pos_X() > 300)
 		{
 			VT->VTASK_Delete(Pic[0]);
 			VT->VTASK_Delete(Pic[1]);
